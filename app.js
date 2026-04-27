@@ -1,5 +1,7 @@
 (() => {
-  const STORAGE_KEY = "alias-studio-history-v1";
+  const STORAGE_KEY = "alias-hub-history-v1";
+  const LEGACY_STORAGE_KEYS = ["alias-studio-history-v1"];
+  const COMPACT_MEDIA_QUERY = "(max-width: 860px), (max-height: 560px) and (orientation: landscape)";
   const MAX_BATCH = 5000;
   const DEFAULT_COUNT = 24;
   const DEFAULT_TAGS = [
@@ -151,6 +153,7 @@
     activeKey: null,
     providerId: "unknown",
     providerLocked: false,
+    isCompactView: false,
     selectedMethods: new Set(),
     filter: "all",
     search: "",
@@ -161,6 +164,7 @@
 
   function init() {
     cacheElements();
+    setupResponsiveMode();
     populateProviders();
     bindEvents();
     renderHistory();
@@ -190,6 +194,50 @@
     els.aliasSearch = document.querySelector("#aliasSearch");
     els.copyAvailable = document.querySelector("#copyAvailable");
     els.storageStatus = document.querySelector("#storageStatus");
+    els.resultsPanel = document.querySelector(".results-panel");
+  }
+
+  function setupResponsiveMode() {
+    const update = (matches) => {
+      updateResponsiveMode(typeof matches === "boolean" ? matches : null);
+    };
+
+    if (typeof window.matchMedia === "function") {
+      const compactMedia = window.matchMedia(COMPACT_MEDIA_QUERY);
+      update(compactMedia.matches);
+
+      if (typeof compactMedia.addEventListener === "function") {
+        compactMedia.addEventListener("change", (event) => update(event.matches));
+      } else if (typeof compactMedia.addListener === "function") {
+        compactMedia.addListener((event) => update(event.matches));
+      }
+    } else {
+      update(null);
+    }
+
+    window.addEventListener(
+      "resize",
+      () => {
+        update(null);
+      },
+      { passive: true }
+    );
+    window.addEventListener(
+      "orientationchange",
+      () => {
+        update(null);
+      },
+      { passive: true }
+    );
+  }
+
+  function updateResponsiveMode(mediaMatch = null) {
+    const compactBySize = window.innerWidth <= 860;
+    const compactByLandscapeHeight = window.innerHeight <= 560 && window.innerWidth > window.innerHeight;
+    const isCompact = mediaMatch === null ? compactBySize || compactByLandscapeHeight : mediaMatch;
+
+    state.isCompactView = isCompact;
+    document.body.dataset.compactView = String(isCompact);
   }
 
   function populateProviders() {
@@ -439,6 +487,7 @@
     state.activeKey = ctx.key;
     renderHistory();
     renderResults();
+    focusResultsPanel();
     showToast(`${aliases.length} new alias${aliases.length === 1 ? "" : "es"} saved.`);
   }
 
@@ -900,6 +949,7 @@
     renderHistory();
     renderResults();
     updateCapacity();
+    focusResultsPanel();
   }
 
   function getActiveRecord() {
@@ -936,9 +986,12 @@
 
   function loadStore() {
     try {
-      const parsed = JSON.parse(window.localStorage.getItem(STORAGE_KEY));
-      if (parsed && parsed.records && Array.isArray(parsed.order)) {
-        return parsed;
+      const keys = [STORAGE_KEY, ...LEGACY_STORAGE_KEYS];
+      for (const key of keys) {
+        const parsed = JSON.parse(window.localStorage.getItem(key));
+        if (parsed && parsed.records && Array.isArray(parsed.order)) {
+          return parsed;
+        }
       }
     } catch {
       return { records: {}, order: [] };
@@ -949,6 +1002,16 @@
 
   function saveStore(store) {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
+  }
+
+  function focusResultsPanel() {
+    if (!state.isCompactView || !els.resultsPanel) {
+      return;
+    }
+
+    window.requestAnimationFrame(() => {
+      els.resultsPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
   }
 
   async function copyLines(lines) {
