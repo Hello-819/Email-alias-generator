@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alias Studio</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="workspace" aria-label="Email alias generator">
+        <header class="app-header">
+          <div>
+            <p class="eyebrow">Alias Studio</p>
+            <h1>Email alias generator</h1>
+          </div>
+          <div class="status-pill" id="storageStatus">Local history ready</div>
+        </header>
+
+        <div class="layout-grid">
+          <section class="panel controls-panel" aria-label="Alias controls">
+            <form id="aliasForm">
+              <div class="field-group">
+                <label for="emailInput">Email address</label>
+                <input
+                  id="emailInput"
+                  name="email"
+                  type="email"
+                  autocomplete="email"
+                  placeholder="example@gmail.com"
+                  required
+                />
+              </div>
+
+              <div class="field-row">
+                <div class="field-group">
+                  <label for="providerSelect">Provider</label>
+                  <select id="providerSelect" name="provider"></select>
+                </div>
+                <div class="field-group count-group">
+                  <label for="countInput">How many</label>
+                  <input id="countInput" name="count" type="number" min="1" value="24" />
+                </div>
+              </div>
+
+              <div class="cap-line" id="capacityLine">Enter an email to see supported alias types.</div>
+
+              <fieldset class="method-box">
+                <legend>Alias type</legend>
+                <div class="method-list" id="methodList"></div>
+              </fieldset>
+
+              <div class="field-group" id="tagField">
+                <label for="tagInput">Tags or keywords</label>
+                <textarea
+                  id="tagInput"
+                  name="tags"
+                  rows="4"
+                  placeholder="shopping, banking, socials, travel"
+                ></textarea>
+              </div>
+
+              <div class="action-row">
+                <button class="primary-button" type="submit">Generate aliases</button>
+                <button class="ghost-button" type="button" id="maxButton">Use max</button>
+              </div>
+            </form>
+
+            <div class="provider-note" id="providerNote"></div>
+          </section>
+
+          <section class="panel results-panel" aria-label="Generated aliases">
+            <div class="results-toolbar">
+              <div>
+                <p class="eyebrow">Generated set</p>
+                <h2 id="resultTitle">No aliases yet</h2>
+              </div>
+              <div class="result-counts" id="resultCounts">
+                <span>0 total</span>
+                <span>0 used</span>
+              </div>
+            </div>
+
+            <div class="tool-strip">
+              <div class="segmented" aria-label="Filter aliases">
+                <button type="button" class="segment active" data-filter="all">All</button>
+                <button type="button" class="segment" data-filter="available">Available</button>
+                <button type="button" class="segment" data-filter="used">Used</button>
+              </div>
+              <label class="search-box">
+                <span>Search</span>
+                <input id="aliasSearch" type="search" placeholder="Find alias" />
+              </label>
+              <button class="ghost-button compact" id="copyAvailable" type="button">Copy available</button>
+            </div>
+
+            <div class="empty-state" id="emptyState">
+              <div class="empty-mark">A</div>
+              <p>Generated aliases will appear here and stay attached to their base email.</p>
+            </div>
+
+            <div class="alias-list" id="aliasList" aria-live="polite"></div>
+          </section>
+
+          <aside class="panel history-panel" aria-label="Alias history">
+            <div class="history-head">
+              <div>
+                <p class="eyebrow">History</p>
+                <h2>Saved emails</h2>
+              </div>
+              <button class="ghost-button compact" type="button" id="clearCurrent">Clear</button>
+            </div>
+            <div class="history-list" id="historyList"></div>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <template id="methodTemplate">
+      <label class="method-card">
+        <input type="checkbox" />
+        <span class="method-check" aria-hidden="true"></span>
+        <span>
+          <strong></strong>
+          <small></small>
+        </span>
+      </label>
+    </template>
+
+    <template id="aliasTemplate">
+      <article class="alias-row">
+        <button type="button" class="used-toggle" aria-pressed="false">
+          <span class="toggle-symbol" aria-hidden="true"></span>
+          <span class="toggle-label">Unused</span>
+        </button>
+        <div class="alias-main">
+          <button type="button" class="alias-address"></button>
+          <div class="alias-meta">
+            <span class="alias-type"></span>
+            <span class="alias-mode"></span>
+          </div>
+        </div>
+      </article>
+    </template>
+
+    <script src="app.js"></script>
+  </body>
+</html>
