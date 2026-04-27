@@ -1,8 +1,10 @@
-# Alias Studio
+# Alias Hub
 
-Alias Studio is a modern static website for generating provider-supported email aliases, tracking which ones you have already used, and revisiting saved alias history later.
+Alias Hub is a modern static website for generating provider-supported email aliases, tracking which ones you have already used, and revisiting saved alias history later.
 
 The app is designed for real mailbox behavior rather than made-up patterns. It only generates alias formats that are supported by the selected provider, and it clearly separates aliases that are ready to receive mail immediately from aliases that still need provider-side setup.
+
+The live website is available at [aliashub.pages.dev](https://aliashub.pages.dev/).
 
 ## Features
 
@@ -14,6 +16,7 @@ The app is designed for real mailbox behavior rather than made-up patterns. It o
 - Filter aliases by `All`, `Available`, or `Used`
 - Search within generated aliases
 - Copy all available aliases in one click
+- Automatically adapts its layout for phones and other compact screens
 - Save alias history per base email address in the browser
 - Generate fresh aliases on repeat runs without losing existing used-state
 
